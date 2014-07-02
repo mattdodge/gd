@@ -1,4 +1,4 @@
 coverage erase
-coverage run --branch --source=gd,bin setup.py test
+coverage run --branch --source=gd setup.py test
 coverage report
 coverage html
