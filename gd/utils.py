@@ -37,6 +37,12 @@ def get_inclusive_urls(urls, start, stop):
             break
 
 
+def datetime_to_url(dt, parts=3):
+    """Convert a Python datetime into the date portion of a Gameday URL"""
+    fragments = ["year_{0.year:04}", "month_{0.month:02}", "day_{0.day:02}"]
+    return "/".join(fragments[:parts]).format(dt) + "/"
+
+
 def setup_logging(filename=None):
     """Setup and return a logger"""
     level = logging.DEBUG if os.environ.get("DEBUG", False) else logging.INFO

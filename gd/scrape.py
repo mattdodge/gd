@@ -10,13 +10,6 @@ WEB_ROOT = "http://gd2.mlb.com/components/game/mlb/"
 log = logging.getLogger(__name__)
 
 
-def datetime_to_url(dt, parts=3):
-    """Convert a Python datetime into the date portion of a Gameday URL
-    """
-    fragments = ["year_{0.year:04}", "month_{0.month:02}", "day_{0.day:02}"]
-    return "/".join(fragments[:parts]).format(dt) + "/"
-
-
 def download(urls, root):
     """Download `urls` into `root`. Return the count of files downloaded.
     Each URL is stored as its full URL (minus the scheme)."""

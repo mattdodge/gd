@@ -191,13 +191,3 @@ class Test_download(unittest.TestCase):
 
         self.assertEqual(actual_count, 0)
         self.assertEqual(actual_fails, [url])
-
-
-class Test_datetime_to_url(unittest.TestCase):
-    """Test gd.scrape.datetime_to_url"""
-
-    def test_dt(self):
-        expected = "year_1984/month_07/day_02/"
-        dt = stub(year=1984, month=7, day=2)
-        actual = scrape.datetime_to_url(dt)
-        self.assertEqual(actual, expected)
