@@ -1,6 +1,10 @@
+from collections import namedtuple
 from datetime import datetime
 import logging
 import os
+
+
+Boundary = namedtuple("Boundary", "date num_parts")
 
 
 def get_boundary(date):
@@ -13,11 +17,11 @@ def get_boundary(date):
     for fmt in ("%Y", "%Y-%m", "%Y-%m-%d"):
         try:
             parts += 1
-            return datetime.strptime(date, fmt), parts
+            return Boundary(datetime.strptime(date, fmt), parts)
         except (TypeError, ValueError):
             continue
     else:
-        return None, 0
+        return Boundary(None, 0)
 
 
 def get_inclusive_urls(urls, start, stop):

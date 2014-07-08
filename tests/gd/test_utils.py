@@ -11,6 +11,11 @@ from gd import utils
 
 class Test_get_boundary(unittest.TestCase):
 
+    def test_with_namedtuple(self):
+        actual = utils.get_boundary("")
+        self.assertIsNone(actual.date)
+        self.assertEqual(actual.num_parts, 0)
+
     def test_None(self):
         actual_dt, actual_parts = utils.get_boundary(None)
         self.assertIsNone(actual_dt)

@@ -32,21 +32,21 @@ def do_scrape(cache, begin=None, end=None):
     for today would mean having to account for a game existing but no files
     available."""
     start_scrape = datetime.now()
-    begin, begin_parts = utils.get_boundary(begin)
-    end, end_parts = utils.get_boundary(end)
+    begin = utils.get_boundary(begin)
+    end = utils.get_boundary(end)
 
     if begin is None:
         start = scrape.WEB_ROOT
     else:
         start = urljoin(scrape.WEB_ROOT,
-                        scrape.datetime_to_url(begin, begin_parts))
+                        scrape.datetime_to_url(begin.date, begin.num_parts))
 
     if end is None:
         stop = urljoin(scrape.WEB_ROOT, scrape.datetime_to_url(
                        datetime.today() - timedelta(days=1)))
     else:
         stop = urljoin(scrape.WEB_ROOT,
-                       scrape.datetime_to_url(end, end_parts))
+                       scrape.datetime_to_url(end.date, end.num_parts))
 
     session = requests.Session()
 
