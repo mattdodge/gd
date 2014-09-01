@@ -10,5 +10,5 @@ setup(name="gameday",
       packages=["gd",
                 "gd.scripts"],
       install_requires=["requests"],
-      test_suite="tests",
+      test_suite="gd.tests",
      )
