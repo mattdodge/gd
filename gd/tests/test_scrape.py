@@ -69,7 +69,7 @@ class Test_web_scraper(unittest.TestCase):
 
     @patch("gd.scrape.ElementTree.fromstring")
     def test_requests_session(self, mock_fromstring):
-        response = stub(raise_for_status=lambda: None, content=None)
+        response = stub(raise_for_status=lambda: None, content="content")
         session = stub(get=lambda arg: response)
 
         root = "http://www.example.com"
