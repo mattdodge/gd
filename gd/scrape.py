@@ -1,9 +1,10 @@
 from urllib.parse import urljoin, urlsplit
 from xml.etree import ElementTree
-import logging
 import os
 
 import requests
+
+from gd import utils
 
 WEB_ROOT = "http://gd2.mlb.com/components/game/mlb/"
 
@@ -11,7 +12,7 @@ WEB_ROOT = "http://gd2.mlb.com/components/game/mlb/"
 # We're using an XML parser to parse HTML. Whatever, the rest of it works.
 WITHOUT_DOCTYPE = slice(56, -1)
 
-log = logging.getLogger(__name__)
+log = utils.setup_logging()
 
 
 def download(urls, root):

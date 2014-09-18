@@ -1,7 +1,4 @@
 from datetime import datetime
-import imp
-import importlib
-import logging
 import unittest
 
 from pretend import stub
@@ -86,36 +83,6 @@ class Test_get_inclusive_urls(unittest.TestCase):
         stop = "a/g"
         expected = []
         self._test_range(start, stop, expected)
-
-
-class Test_setup_logging(unittest.TestCase):
-
-    def setUp(self):
-        self.utils = importlib.import_module("gd.utils")
-
-    def tearDown(self):
-        del self.utils
-        imp.reload(logging)
-
-    def test_default(self):
-        log = self.utils.setup_logging()
-
-        self.assertEqual(log.name, "gd")
-        self.assertEqual(len(log.handlers), 1)
-        self.assertEqual(type(log.handlers[0]), logging.StreamHandler)
-        self.assertFalse(log.isEnabledFor(logging.DEBUG))
-        self.assertTrue(log.isEnabledFor(logging.INFO))
-
-    def test_with_file(self):
-        file_name = "test.log"
-        log = self.utils.setup_logging(file_name)
-
-        self.assertEqual(log.name, "gd")
-        self.assertEqual(len(log.handlers), 2)
-        self.assertCountEqual([type(x) for x in log.handlers],
-                              [logging.StreamHandler, logging.FileHandler])
-        self.assertFalse(log.isEnabledFor(logging.DEBUG))
-        self.assertTrue(log.isEnabledFor(logging.INFO))
 
 
 class Test_datetime_to_url(unittest.TestCase):

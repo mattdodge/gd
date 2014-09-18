@@ -47,11 +47,16 @@ def datetime_to_url(dt, parts=3):
     return "/".join(fragments[:parts]).format(dt) + "/"
 
 
-def setup_logging(filename=None):
+def setup_logging(filename=None, enabled=False):
     """Setup and return a logger"""
+    enabled = enabled or os.environ.get("ENABLE_GD_LOGGING", False)
     level = logging.DEBUG if os.environ.get("DEBUG", False) else logging.INFO
 
     log = logging.getLogger("gd")
+    if not enabled:
+        log.addHandler(logging.NullHandler())
+        return log
+
     log.setLevel(level)
 
     formatter = logging.Formatter("%(asctime)s | %(name)s | "
