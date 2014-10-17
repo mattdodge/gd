@@ -41,7 +41,7 @@ def download(urls, root):
             continue
 
         with open(os.path.join(target, filename), "w") as fh:
-            fh.write(response.content[WITHOUT_DOCTYPE].decode("utf8"))
+            fh.write(response.content.decode("utf8"))
             log.debug("downloaded %s", url)
             downloads += 1
 
@@ -62,6 +62,7 @@ def web_scraper(roots, match=None, session=None):
             log.error("web_scraper error: %s raised %s", root, str(exc))
             continue
 
+        # Parse the directory listing, but ignore the DOCTYPE.
         source = ElementTree.fromstring(response.content[WITHOUT_DOCTYPE])
         a_tags = source.findall(".//a")
         for a in a_tags:

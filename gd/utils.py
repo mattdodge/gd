@@ -1,10 +1,14 @@
 from collections import namedtuple
-from datetime import datetime
+from datetime import date, datetime, time
 import logging
 import os
 
 
 Boundary = namedtuple("Boundary", "date num_parts")
+
+MONTHS = {"January": 1, "February": 2, "March": 3, "April": 4,
+          "May": 5, "June": 6, "July": 7, "August": 8, "September": 9,
+          "October": 10, "November": 11, "December": 12}
 
 
 def get_boundary(date):
@@ -45,6 +49,36 @@ def datetime_to_url(dt, parts=3):
     """Convert a Python datetime into the date portion of a Gameday URL"""
     fragments = ["year_{0.year:04}", "month_{0.month:02}", "day_{0.day:02}"]
     return "/".join(fragments[:parts]).format(dt) + "/"
+
+
+def create_date(string):
+    """Given a string like 'July 2, 1984', turn it into a datetime.date."""
+    if not string:
+        return date.min
+    parts = string.split()
+    month = MONTHS[parts[0]]
+    day = int(parts[1][:-1])
+    year = int(parts[2])
+    return date(year, month, day)
+
+
+def create_datetime(string):
+    """Given a string like 2014-07-19T23:12:35Z, return a datetime.datetime."""
+    if not string:
+        # There are times where pitches have had an empty string for
+        # a timestamp, so return the minimum value.
+        return datetime.min
+    return datetime.strptime(string, "%Y-%m-%dT%H:%M:%SZ")
+
+
+def create_time(string):
+    """Given a string like 12:00 or 1200, return a datetime.time."""
+    if not string:
+        return time.min
+    string = string.replace(":", "")
+    hour = int(string[:2])
+    minute = int(string[2:4])
+    return time(hour, minute)
 
 
 def setup_logging(filename=None, enabled=False):
