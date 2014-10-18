@@ -7,9 +7,6 @@ from gd.utils import create_date, create_datetime, create_time
 def _strip_keys(obj, valid):
     """Given a dictionary and a set of valid keys, return a dictionary which
     only contains keys found in `valid`."""
-    # Special case that we might just want everything anyway.
-    if valid == "ALL":
-        return obj
     return {key: obj[key] for key in obj if key in valid}
 
 
@@ -94,15 +91,12 @@ def get_atbats(tree):
 
 def get_pitches(tree):
     """Parse inning_all.xml data to find the pitches."""
-    atbats = tree.findall(".//atbat")
-
-    # Tie pitches back to the atbat they came from.
-    for atbat in atbats:
-        pitches = atbat.findall(".//pitch")
-        for pitch in pitches:
+    for atbat in tree.findall(".//atbat"):
+        for pitch in atbat.findall(".//pitch"):
             pitch.attrib["tfs"] = create_time(pitch.attrib["tfs"])
             pitch.attrib["tfs_zulu"] = create_datetime(
                 pitch.attrib["tfs_zulu"])
+            # Tie pitches back to the atbat they came from.
             pitch.attrib["start_tfs_zulu"] = create_datetime(
                 atbat.attrib["start_tfs_zulu"])
             yield pitch.attrib

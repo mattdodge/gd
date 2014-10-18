@@ -1,4 +1,4 @@
-from datetime import datetime, time
+from datetime import datetime, date, time
 import unittest
 
 from pretend import stub
@@ -11,9 +11,19 @@ class Test_get_game(unittest.TestCase):
 
     def test_get_game(self):
         expected = {"local_game_time": "12:00"}
-        s = stub(attrib=expected)
-        actual = parser.get_game(s)
+        tree = stub(attrib=expected)
+        actual = parser.get_game(tree)
         self.assertEqual(actual, expected)
+
+
+class Test_get_date(unittest.TestCase):
+    """Test the gd.parser.get_date function."""
+
+    def test_get_date(self):
+        game = {"date": "July 2, 1984"}
+        tree = stub(attrib=game)
+        actual = parser.get_date(tree)
+        self.assertEqual(actual, date(1984, 7, 2))
 
 
 class Test_get_players(unittest.TestCase):
@@ -80,6 +90,23 @@ class Test_get_stadium(unittest.TestCase):
                                parser.get_stadium, tree)
 
 
+class Test_get_actions(unittest.TestCase):
+    """Test the gd.parser.get_actions function."""
+
+    def test_get_actions(self):
+        input_value = {"tfs": "123456",
+                       "tfs_zulu": "2014-07-19T23:12:35Z",
+                       "id": "987654"}
+        value = stub(attrib=input_value)
+        tree = stub(findall=lambda arg: [value])
+        actual = parser.get_actions(tree)
+
+        expected = {"tfs": time(12, 34),
+                    "tfs_zulu": datetime(2014, 7, 19, 23, 12, 35),
+                    "id": "987654"}
+        self.assertEqual(list(actual), [expected])
+
+
 class Test_get_atbats(unittest.TestCase):
     """Test the gd.parser.get_atbats function."""
 
@@ -101,4 +128,24 @@ class Test_get_atbats(unittest.TestCase):
         expected = {"start_tfs": time(12, 34),
                     "start_tfs_zulu": datetime(2014, 7, 19, 23, 12, 35),
                     "score": True}
+        self.assertEqual(list(actual), [expected])
+
+
+class Test_get_pitches(unittest.TestCase):
+    """Test the gd.parser.get_pitches function."""
+
+    def test_get_pitches(self):
+        atbat_attribs = {"start_tfs_zulu": "2014-07-19T23:12:35Z"}
+        pitch_attribs = {"tfs": "123456",
+                         "tfs_zulu": "2014-07-19T23:15:35Z"}
+        pitch_value = stub(attrib=pitch_attribs)
+
+        atbat = stub(findall=lambda arg: [pitch_value],
+                     attrib=atbat_attribs)
+        tree = stub(findall=lambda arg: [atbat])
+
+        actual = parser.get_pitches(tree)
+        expected = {"tfs": time(12, 34),
+                    "tfs_zulu": datetime(2014, 7, 19, 23, 15, 35),
+                    "start_tfs_zulu": datetime(2014, 7, 19, 23, 12, 35)}
         self.assertEqual(list(actual), [expected])

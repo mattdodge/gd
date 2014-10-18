@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date, time
 import unittest
 
 from pretend import stub
@@ -86,10 +86,54 @@ class Test_get_inclusive_urls(unittest.TestCase):
 
 
 class Test_datetime_to_url(unittest.TestCase):
-    """Test gd.scrape.datetime_to_url"""
+    """Test gd.utils.datetime_to_url"""
 
     def test_dt(self):
         expected = "year_1984/month_07/day_02/"
         dt = stub(year=1984, month=7, day=2)
         actual = utils.datetime_to_url(dt)
         self.assertEqual(actual, expected)
+
+
+class Test_create_date(unittest.TestCase):
+    """Test gd.utils.create_date"""
+
+    def test_create(self):
+        actual = utils.create_date("July 2, 1984")
+        self.assertEqual(actual, date(1984, 7, 2))
+
+    def test_create_empty(self):
+        actual = utils.create_date("")
+        self.assertEqual(actual, date.min)
+
+
+class Test_create_datetime(unittest.TestCase):
+    """Test gd.utils.create_datetime"""
+
+    def test_create_datetime(self):
+        actual = utils.create_datetime("1984-07-02T12:34:56Z")
+        self.assertEqual(actual, datetime(1984, 7, 2, 12, 34, 56))
+
+    def test_create_datetime_empty(self):
+        actual = utils.create_datetime("")
+        self.assertEqual(actual, datetime.min)
+
+
+class Test_create_time(unittest.TestCase):
+    """Test gd.utils.create_time"""
+
+    def test_create_time1(self):
+        actual = utils.create_time("123456")
+        self.assertEqual(actual, time(12, 34))
+
+    def test_create_time2(self):
+        actual = utils.create_time("12:34")
+        self.assertEqual(actual, time(12, 34))
+
+    def test_create_time3(self):
+        actual = utils.create_time("1234")
+        self.assertEqual(actual, time(12, 34))
+
+    def test_create_time_empty(self):
+        actual = utils.create_time("")
+        self.assertEqual(actual, time.min)
