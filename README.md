@@ -4,6 +4,10 @@
 
 Tools for working with http://gd2.mlb.com/components/game/mlb/
 
+This is definitely a work in progress. Right now it consists of a scraper,
+parser, and database storage. Building a REST API and analysis tools on
+top of that is an end goal.
+
 # Development
 
 ## Requirements
@@ -23,6 +27,6 @@ source ../envs/gd/bin/activate
 pip install tox
 tox
 ...
-Ran 28 tests in 0.026s
+Ran 51 tests in 0.038s
 ...
 ```
