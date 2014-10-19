@@ -29,33 +29,33 @@ def _get_engine(args):
 def add_teams(session, teams):
     query = session.query(Team.id)
     for team in teams:
-        if query.filter(Team.id.is_(int(team["id"]))).scalar() is not None:
+        if query.filter(Team.id.is_(int(team["id"]))).scalar() is None:
             session.add(Team(**team))
 
 
 def add_players(session, players):
-    query = session.query(Team.id)
+    query = session.query(Player.id)
     for player in players:
-        if query.filter(Player.id.is_(int(player["id"]))).scalar() is not None:
-            session.add(Player(**team))
+        if query.filter(Player.id.is_(int(player["id"]))).scalar() is None:
+            session.add(Player(**player))
 
 
 def add_umpire(session, umpire):
     query = session.query(Umpire.id)
-    if query.filter(Umpire.id.is_(int(umpire["id"]))).scalar() is not None:
+    if query.filter(Umpire.id.is_(int(umpire["id"]))).scalar() is None:
         session.add(Umpire(**umpire))
 
 
 def add_stadium(session, stadium):
     query = session.query(Stadium.id)
-    if query.filter(Stadium.id.is_(int(stadium["id"]))).scalar() is not None:
+    if query.filter(Stadium.id.is_(int(stadium["id"]))).scalar() is None:
         session.add(Stadium(**stadium))
 
 
 def add_game(session, game):
     query = session.query(Game.game_pk)
     if query.filter(
-        Game.game_pk.is_(int(game["game_pk"]))).scalar() is not None:
+        Game.game_pk.is_(int(game["game_pk"]))).scalar() is None:
         session.add(Game(**game))
 
 
