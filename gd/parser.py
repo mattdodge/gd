@@ -85,7 +85,11 @@ def get_atbats(tree):
         atbat["start_tfs"] = create_time(atbat["start_tfs"])
         atbat["start_tfs_zulu"] = create_datetime(
             atbat["start_tfs_zulu"])
-        atbat["score"] = True if atbat["score"] == "T" else False
+        if "score" in atbat:
+            atbat["score"] = True if atbat["score"] == "T" else False
+        else:
+            atbat["score"] = False
+
         yield atbat
 
 
