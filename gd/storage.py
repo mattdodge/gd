@@ -5,7 +5,7 @@ from libcloud.storage.providers import get_driver as get_storage_driver
 from libcloud.storage.types import ContainerDoesNotExistError
 
 
-def get_driver(config="config/storage.conf"):
+def get_driver(config="/usr/local/etc/gd/storage.conf"):
     parser = configparser.ConfigParser()
     if parser.read(config):
         provider = parser.get("storage", "provider")

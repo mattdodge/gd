@@ -11,9 +11,8 @@ def _get_engine_uri():
     if path:
         return path
 
-    path = "config/db.conf"
     parser = configparser.ConfigParser()
-    if parser.read(path):
+    if parser.read("/usr/local/etc/gd/db.conf"):
         return parser.get("connection", "uri")
 
     raise Exception("No database engine available")

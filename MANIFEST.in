@@ -1,0 +1,3 @@
+recursive-include gd *.py
+prune gd/tests/*.py
+include config/*.conf.example
