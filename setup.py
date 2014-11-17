@@ -9,6 +9,7 @@ setup(name="gameday",
       author_email="brian@python.org",
       packages=["gd",
                 "gd.scripts"],
-      install_requires=["requests"],
+      install_requires=["requests",
+                        "sqlalchemy"],
       test_suite="gd.tests",
      )
