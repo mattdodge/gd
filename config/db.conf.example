@@ -1,0 +1,2 @@
+[connection]
+uri = mysql+pymysql://username:password@url/dbname

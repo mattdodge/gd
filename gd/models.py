@@ -1,9 +1,8 @@
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy import (Column, Date, DateTime, Time, ForeignKey, Integer,
                         String, Numeric, Boolean)
 
-Base = declarative_base()
+from gd.database import Base
 
 
 class Team(Base):

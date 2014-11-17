@@ -54,7 +54,7 @@ def _get_file_list(session, begin, end):
     return files
 
 
-def do_scrape(cache, begin=None, end=None):
+def do_scrape(action, begin=None, end=None):
     """Run the scraper over the range [begin, end]
 
     If no beginning is given, scraping starts from the root.
@@ -70,9 +70,8 @@ def do_scrape(cache, begin=None, end=None):
 
     start, stop = _get_request_range(begin, end)
     files = _get_file_list(session, start, stop)
-    print(list(files)[0])
 
-    count, fails = scrape.download(files, cache)
+    count, fails = action(files)
     end_scrape = datetime.now()
     log.info("%d files downloaded in %s", count,
              str(end_scrape - start_scrape))
@@ -90,32 +89,21 @@ def get_args():
                         help="Beginning date in %Y-%m-%d format")
     parser.add_argument("-e", "--end", dest="end", type=str,
                         help="Ending date in %Y-%m-%d format")
-    parser.add_argument("-c", "--cache", dest="cache", type=str,
-                        help="Local cache directory", default=None)
-    parser.add_argument("-d", "--daemon", dest="daemon", action="store_true",
-                        default=False, help="Run %(prog)s as a daemon.")
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("-d", "--download", dest="download",
+                       action="store_true", default=False,
+                       help="Download scraped files.")
+    group.add_argument("-u", "--upload", dest="upload",
+                       action="store_true", default=False,
+                       help="Upload scraped files.")
 
     return parser.parse_args()
 
 
 def main():
     args = get_args()
-    do_scrape(args.cache, args.begin, args.end)
-
-    if args.daemon:
-        run_daemon()
-
-
-def run_daemon():
-    def exiting(signal):
-        print("Got signal %s: exiting" % signal)
-        loop.stop()
-
-    loop = asyncio.get_event_loop()
-    for sig in ("SIGINT", "SIGTERM"):
-        loop.add_signal_handler(getattr(signal, sig),
-                                functools.partial(exiting, sig))
-
-    print("Event loop running forever, press CTRL+c to interrupt.")
-    print("pid %s: send SIGINT or SIGTERM to exit." % os.getpid())
-    loop.run_forever()
+    if not any([args.download, args.upload]):
+        print("Must choose to upload or download.")
+        return -1
+    action = scrape.download if args.download else scrape.upload
+    return do_scrape(action, args.begin, args.end)

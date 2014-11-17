@@ -1,0 +1,5 @@
+[storage]
+provider = cloud
+username = me
+api_key = 0123456789abcdeghijklmnopqrstuvwxyz
+region = earth

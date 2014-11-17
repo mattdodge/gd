@@ -4,6 +4,7 @@ import os
 
 import requests
 
+from gd import storage
 from gd import utils
 
 WEB_ROOT = "http://gd2.mlb.com/components/game/mlb/"
@@ -14,8 +15,39 @@ WITHOUT_DOCTYPE = slice(56, -1)
 
 log = utils.setup_logging()
 
+def upload(urls):
+    session = requests.Session()
+    downloads = 0
+    fails = []
 
-def download(urls, root):
+    driver = storage.get_driver()
+    container = None
+    for url in urls:
+        parts = urlsplit(url)
+        filename = os.path.split(parts.path)[1]
+        # Skip directory pages.
+        if not filename:
+            continue
+
+        if container is None:
+            container = storage.get_container(driver, parts.netloc)
+
+        object_name = parts.path
+
+        response = session.get(url)
+        try:
+            response.raise_for_status()
+        except requests.HTTPError as exc:
+            fails.append(url)
+            continue
+
+        storage.upload_object(driver, container, object_name, response.content)
+        downloads += 1
+
+    return downloads, fails
+
+
+def download(urls):
     """Download `urls` into `root`. Return the count of files downloaded.
     Each URL is stored as its full URL (minus the scheme)."""
     session = requests.Session()
@@ -28,7 +60,7 @@ def download(urls, root):
         if not filename:
             continue
 
-        target = os.path.join(root, parts.netloc + directory)
+        target = parts.netloc + directory
         # Ignore if the target directory already existed.
         os.makedirs(target, exist_ok=True)
 

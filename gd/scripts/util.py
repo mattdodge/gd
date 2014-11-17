@@ -7,23 +7,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from gd import parser
+from gd import database
 from gd.models import Base
 from gd.models import (Action, AtBat, Game, Player, Pitch, Stadium,
                        Team, Umpire)
 
 
 ROOT = "/Users/brian/dev/gd/2014_data/gd2.mlb.com/components/game/mlb/year_2014/"
-
-
-def _create_sqlite_engine(name):
-    return create_engine("sqlite:///%s" % name)
-
-
-def _get_engine(args):
-    if args.engine == "sqlite":
-        return _create_sqlite_engine(args.name)
-    else:
-        raise Exception("Unable to create %s engine" % args.engine)
 
 
 def add_teams(session, teams):
@@ -60,14 +50,11 @@ def add_game(session, game):
 
 
 def do_initdb(args):
-    engine = _get_engine(args)
-    Base.metadata.create_all(engine)
-    print("Initialized %s database" % args.engine)
+    database.init()
 
 
 def do_import(args):
-    engine = _get_engine(args)
-    Session = sessionmaker(bind=engine)
+    engine = database.engine
 
     for root, dirs, files in os.walk(args.root):
         game_path = join(root, "game.xml")
@@ -102,12 +89,10 @@ def do_import(args):
         if game["type"] in ("S", "E"):
             continue
 
-        session = Session()
-
-        add_teams(session, teams)
-        add_players(session, players)
-        add_umpire(session, plate_umpire)
-        add_stadium(session, stadium)
+        add_teams(database.session, teams)
+        add_players(database.session, players)
+        add_umpire(database.session, plate_umpire)
+        add_stadium(database.session, stadium)
 
         # This home/away determination is risky depending on ordering,
         # but every game I've looked at has worked this way.
@@ -116,23 +101,23 @@ def do_import(args):
         game["away_team"] = teams[1]["id"]
         game["stadium"] = stadium["id"]
         game["umpire_id"] = plate_umpire["id"]
-        add_game(session, game)
+        add_game(database.session, game)
 
         for action in actions:
             action["game_pk"] = game["game_pk"]
-        session.add_all([Action(**action) for action in actions])
+        database.session.add_all([Action(**action) for action in actions])
 
         for atbat in atbats:
             atbat["game_pk"] = game["game_pk"]
-        session.add_all([AtBat(**atbat) for atbat in atbats])
+        database.session.add_all([AtBat(**atbat) for atbat in atbats])
 
         for pitch in pitches:
             pitch["game_pk"] = game["game_pk"]
         # HBPs don't seem to have anything in them, so skip 'em
         pitches = [p for p in pitches if p["des"] != "Hit By Pitch"]
-        session.add_all([Pitch(**pitch) for pitch in pitches])
+        database.session.add_all([Pitch(**pitch) for pitch in pitches])
 
-        session.commit()
+        database.session.commit()
 
 
 def get_args():
@@ -141,17 +126,9 @@ def get_args():
 
     init_parser = subparsers.add_parser("initdb")
     init_parser.set_defaults(func=do_initdb)
-    init_parser.add_argument("--engine", default="sqlite",
-                             help="Database engine to use")
-    init_parser.add_argument("--name", default="gameday.db",
-                             help="Name of database")
 
     import_parser = subparsers.add_parser("import")
     import_parser.set_defaults(func=do_import)
-    import_parser.add_argument("--engine", default="sqlite",
-                               help="Database engine to use")
-    import_parser.add_argument("--name", default="gameday.db",
-                               help="Name of database")
     import_parser.add_argument("--root",
         help="Root directory to search for Gameday files")
 
