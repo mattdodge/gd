@@ -143,7 +143,7 @@ class Test_download(unittest.TestCase):
     @patch("os.makedirs")
     def test_file(self, mock_makedirs, mock_get):
         urls = ["http://gd.mlb.com/test1.xml", "http://gd.mlb.com/test2.xml"]
-        targets = ["test/gd.mlb.com/test1.xml", "test/gd.mlb.com/test1.xml"]
+        targets = ["gd.mlb.com/test1.xml", "gd.mlb.com/test1.xml"]
         content = "content"
 
         response = MagicMock()
@@ -154,7 +154,7 @@ class Test_download(unittest.TestCase):
         mo = mock_open()
         # Need to patch `open` within the gd.scrape namespace.
         with patch("%s.open" % scrape.__name__, mo, create=True):
-            actual_count, actual_fails = scrape.download(urls, "test")
+            actual_count, actual_fails = scrape.download(urls)
 
         mo.assert_any_call(targets[0], "w")
         mo.assert_any_call(targets[1], "w")
@@ -173,7 +173,7 @@ class Test_download(unittest.TestCase):
         mo = mock_open()
         # Need to patch `open` within the gd.scrape namespace.
         with patch("%s.open" % scrape.__name__, mo, create=True):
-            actual_count, actual_fails = scrape.download([url], "test")
+            actual_count, actual_fails = scrape.download([url])
 
         # We bail out early when directories come up.
         self.assertEqual(actual_count, 0)
@@ -187,7 +187,7 @@ class Test_download(unittest.TestCase):
         response.raise_for_status = MagicMock(side_effect=HTTPError)
         mock_get.return_value = response
 
-        actual_count, actual_fails = scrape.download([url], "test")
+        actual_count, actual_fails = scrape.download([url])
 
         self.assertEqual(actual_count, 0)
         self.assertEqual(actual_fails, [url])

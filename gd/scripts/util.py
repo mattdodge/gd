@@ -3,17 +3,13 @@ from xml.etree import ElementTree
 import argparse
 import os
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
 from gd import parser
 from gd import database
-from gd.models import Base
 from gd.models import (Action, AtBat, Game, Player, Pitch, Stadium,
                        Team, Umpire)
 
 
-ROOT = "/Users/brian/dev/gd/2014_data/gd2.mlb.com/components/game/mlb/year_2014/"
+ROOT = "gd2.mlb.com/components/game/mlb/year_2014/"
 
 
 def add_teams(session, teams):
@@ -44,8 +40,7 @@ def add_stadium(session, stadium):
 
 def add_game(session, game):
     query = session.query(Game.game_pk)
-    if query.filter(
-        Game.game_pk.is_(int(game["game_pk"]))).scalar() is None:
+    if query.filter(Game.game_pk.is_(int(game["game_pk"]))).scalar() is None:
         session.add(Game(**game))
 
 
@@ -54,8 +49,6 @@ def do_initdb(args):
 
 
 def do_import(args):
-    engine = database.engine
-
     for root, dirs, files in os.walk(args.root):
         game_path = join(root, "game.xml")
         inning_path = join(root, "inning/inning_all.xml")
@@ -130,7 +123,7 @@ def get_args():
     import_parser = subparsers.add_parser("import")
     import_parser.set_defaults(func=do_import)
     import_parser.add_argument("--root",
-        help="Root directory to search for Gameday files")
+                               help="Directory to search for Gameday files")
 
     return parser.parse_args()
 

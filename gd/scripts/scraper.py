@@ -1,24 +1,12 @@
 from datetime import datetime, timedelta
 from urllib.parse import urljoin
 import argparse
-import asyncio
-import functools
-import os
 import requests
-import signal
 
 from gd import scrape
 from gd import utils
 
 log = utils.setup_logging("scraper.log")
-
-
-def do_input():
-    pass
-
-
-def do_parse():
-    pass
 
 
 def _get_request_range(begin, end):

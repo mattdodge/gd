@@ -15,6 +15,7 @@ WITHOUT_DOCTYPE = slice(56, -1)
 
 log = utils.setup_logging()
 
+
 def upload(urls):
     session = requests.Session()
     downloads = 0
@@ -37,7 +38,7 @@ def upload(urls):
         response = session.get(url)
         try:
             response.raise_for_status()
-        except requests.HTTPError as exc:
+        except requests.HTTPError:
             fails.append(url)
             continue
 
