@@ -4,7 +4,6 @@ from urllib.parse import urljoin
 from xml.etree import ElementTree
 import argparse
 import os
-import logging
 
 import requests
 

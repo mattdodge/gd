@@ -71,7 +71,7 @@ def download(urls):
 
         with open(os.path.join(target, filename), "w") as fh:
             fh.write(response.content.decode("utf8"))
-            loger.debug("downloaded %s", url)
+            logger.debug("downloaded %s", url)
             downloads += 1
 
     logger.info("Downloaded %d files" % downloads)

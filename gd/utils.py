@@ -87,6 +87,7 @@ def get_logger(name):
     logger.addHandler(logging.NullHandler())
     return logger
 
+
 def enable_logging():
     logger = get_logger("gd")
 
@@ -104,6 +105,5 @@ def enable_logging():
     fh.setLevel(level)
     fh.setFormatter(fmt)
     logger.addHandler(fh)
-
 
     return logger
