@@ -1,7 +1,5 @@
 from collections import namedtuple
 from datetime import date, datetime, time
-import logging
-import os
 
 
 Boundary = namedtuple("Boundary", "date num_parts")
@@ -79,32 +77,3 @@ def create_time(string):
     hour = int(string[:2])
     minute = int(string[2:4])
     return time(hour, minute)
-
-
-def setup_logging(filename=None, enabled=False):
-    """Setup and return a logger"""
-    enabled = enabled or os.environ.get("ENABLE_GD_LOGGING", False)
-    level = logging.DEBUG if os.environ.get("DEBUG", False) else logging.INFO
-
-    log = logging.getLogger("gd")
-    if not enabled:
-        log.addHandler(logging.NullHandler())
-        return log
-
-    log.setLevel(level)
-
-    formatter = logging.Formatter("%(asctime)s | %(name)s | "
-                                  "%(levelname)s | %(message)s")
-
-    console = logging.StreamHandler()
-    console.setLevel(level)
-    console.setFormatter(formatter)
-    log.addHandler(console)
-
-    if filename is not None:
-        file_handler = logging.FileHandler(filename)
-        file_handler.setLevel(level)
-        file_handler.setFormatter(formatter)
-        log.addHandler(file_handler)
-
-    return log

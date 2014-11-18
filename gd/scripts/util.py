@@ -14,8 +14,6 @@ from gd import utils
 from gd.models import (Action, AtBat, Game, Player, Pitch, Stadium,
                        Team, Umpire)
 
-log = utils.setup_logging("scraper.log")
-
 ROOT = "gd2.mlb.com/components/game/mlb/year_2014/"
 
 
@@ -76,11 +74,11 @@ def do_scrape(args):
 
     count, fails = action(files)
     end_scrape = datetime.now()
-    log.info("%d files downloaded in %s", count,
-             str(end_scrape - start_scrape))
+    print("%d files downloaded in %s", count,
+          str(end_scrape - start_scrape))
     if fails:
         for url in fails:
-            log.error("failed to download %s", url)
+            print("failed to download %s", url)
 
     return count
 

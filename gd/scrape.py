@@ -5,15 +5,12 @@ import os
 import requests
 
 from gd import storage
-from gd import utils
 
 WEB_ROOT = "http://gd2.mlb.com/components/game/mlb/"
 
 # ElementTree chokes on the doctype in these files so just skip over it.
 # We're using an XML parser to parse HTML. Whatever, the rest of it works.
 WITHOUT_DOCTYPE = slice(56, -1)
-
-log = utils.setup_logging()
 
 
 def upload(urls):
@@ -69,13 +66,13 @@ def download(urls):
         try:
             response.raise_for_status()
         except requests.HTTPError as exc:
-            log.error("download error: %s raised %s", url, str(exc))
+            print("download error: %s raised %s", url, str(exc))
             fails.append(url)
             continue
 
         with open(os.path.join(target, filename), "w") as fh:
             fh.write(response.content.decode("utf8"))
-            log.debug("downloaded %s", url)
+            print("downloaded %s", url)
             downloads += 1
 
     return downloads, fails
@@ -92,7 +89,7 @@ def web_scraper(roots, match=None, session=None):
         try:
             response.raise_for_status()
         except requests.HTTPError as exc:
-            log.error("web_scraper error: %s raised %s", root, str(exc))
+            print("web_scraper error: %s raised %s", root, str(exc))
             continue
 
         # Parse the directory listing, but ignore the DOCTYPE.
