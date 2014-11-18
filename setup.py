@@ -15,4 +15,11 @@ setup(name="gameday",
       install_requires=["requests",
                         "sqlalchemy"],
       test_suite="gd.tests",
+      classifiers=[
+        "Development Status :: 1 - Planning",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3 :: Only"]
      )
