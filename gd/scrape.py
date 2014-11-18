@@ -5,6 +5,9 @@ import os
 import requests
 
 from gd import storage
+from gd import utils
+
+logger = utils.get_logger(__name__)
 
 WEB_ROOT = "http://gd2.mlb.com/components/game/mlb/"
 
@@ -15,11 +18,10 @@ WITHOUT_DOCTYPE = slice(56, -1)
 
 def upload(urls):
     session = requests.Session()
-    downloads = 0
-    fails = []
 
     driver = storage.get_driver()
     container = None
+    uploads = 0
     for url in urls:
         parts = urlsplit(url)
         filename = os.path.split(parts.path)[1]
@@ -35,14 +37,13 @@ def upload(urls):
         response = session.get(url)
         try:
             response.raise_for_status()
-        except requests.HTTPError:
-            fails.append(url)
+        except requests.HTTPError as exc:
+            logger.error("%s upload failed: %s", url, exc)
             continue
 
         storage.upload_object(driver, container, object_name, response.content)
-        downloads += 1
-
-    return downloads, fails
+        uploads += 1
+    logger.info("Uploaded %d objects", uploads)
 
 
 def download(urls):
@@ -50,7 +51,6 @@ def download(urls):
     Each URL is stored as its full URL (minus the scheme)."""
     session = requests.Session()
     downloads = 0
-    fails = []
     for url in urls:
         parts = urlsplit(url)
         directory, filename = os.path.split(parts.path)
@@ -66,16 +66,15 @@ def download(urls):
         try:
             response.raise_for_status()
         except requests.HTTPError as exc:
-            print("download error: %s raised %s", url, str(exc))
-            fails.append(url)
+            logger.error("download error: %s raised %s", url, str(exc))
             continue
 
         with open(os.path.join(target, filename), "w") as fh:
             fh.write(response.content.decode("utf8"))
-            print("downloaded %s", url)
+            loger.debug("downloaded %s", url)
             downloads += 1
 
-    return downloads, fails
+    logger.info("Downloaded %d files" % downloads)
 
 
 def web_scraper(roots, match=None, session=None):
@@ -89,7 +88,7 @@ def web_scraper(roots, match=None, session=None):
         try:
             response.raise_for_status()
         except requests.HTTPError as exc:
-            print("web_scraper error: %s raised %s", root, str(exc))
+            logger.error("scraping %s raised %s", root, str(exc))
             continue
 
         # Parse the directory listing, but ignore the DOCTYPE.

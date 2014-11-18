@@ -4,6 +4,7 @@ from urllib.parse import urljoin
 from xml.etree import ElementTree
 import argparse
 import os
+import logging
 
 import requests
 
@@ -13,6 +14,8 @@ from gd import scrape
 from gd import utils
 from gd.models import (Action, AtBat, Game, Player, Pitch, Stadium,
                        Team, Umpire)
+
+logger = utils.enable_logging()
 
 ROOT = "gd2.mlb.com/components/game/mlb/year_2014/"
 
@@ -72,15 +75,10 @@ def do_scrape(args):
     start, stop = _get_request_range(begin, end)
     files = _get_file_list(session, start, stop)
 
-    count, fails = action(files)
+    action(files)
     end_scrape = datetime.now()
-    print("%d files downloaded in %s", count,
-          str(end_scrape - start_scrape))
-    if fails:
-        for url in fails:
-            print("failed to download %s", url)
-
-    return count
+    logger.debug("%s completed in %s", str(action),
+                 str(end_scrape - start_scrape))
 
 
 def add_teams(session, teams):

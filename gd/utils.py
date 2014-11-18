@@ -1,5 +1,8 @@
 from collections import namedtuple
 from datetime import date, datetime, time
+from logging.handlers import RotatingFileHandler
+import logging
+import os
 
 
 Boundary = namedtuple("Boundary", "date num_parts")
@@ -77,3 +80,30 @@ def create_time(string):
     hour = int(string[:2])
     minute = int(string[2:4])
     return time(hour, minute)
+
+
+def get_logger(name):
+    logger = logging.getLogger(name)
+    logger.addHandler(logging.NullHandler())
+    return logger
+
+def enable_logging():
+    logger = get_logger("gd")
+
+    level = logging.DEBUG if os.getenv("DEBUG", False) else logging.INFO
+    logger.setLevel(level)
+    fmt = logging.Formatter(
+        "%(asctime)s | %(name)s | %(levelname)s | %(message)s")
+
+    ch = logging.StreamHandler()
+    ch.setLevel(level)
+    ch.setFormatter(fmt)
+    logger.addHandler(ch)
+
+    fh = RotatingFileHandler("gd-util.log", maxBytes=100000, backupCount=5)
+    fh.setLevel(level)
+    fh.setFormatter(fmt)
+    logger.addHandler(fh)
+
+
+    return logger
