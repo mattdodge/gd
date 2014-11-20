@@ -31,6 +31,6 @@ def upload_object(driver, container, object_name, data):
     """Upload an object through libcloud.storage's upload_object_via_stream."""
 
     if not getattr(data, "__next__", False):
-        data = io.BytesIO(data)
+        data = io.StringIO(data)
 
     return driver.upload_object_via_stream(data, container, object_name)
