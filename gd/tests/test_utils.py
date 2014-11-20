@@ -1,5 +1,5 @@
 from datetime import datetime, date, time
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 import logging
 import unittest
 
@@ -139,6 +139,7 @@ class Test_create_time(unittest.TestCase):
     def test_create_time_empty(self):
         actual = utils.create_time("")
         self.assertEqual(actual, time.min)
+
 
 @patch("logging.StreamHandler")
 @patch("gd.utils.RotatingFileHandler")
