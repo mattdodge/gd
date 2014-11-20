@@ -1,4 +1,6 @@
 from datetime import datetime, date, time
+from unittest.mock import MagicMock, patch
+import logging
 import unittest
 
 from pretend import stub
@@ -137,3 +139,20 @@ class Test_create_time(unittest.TestCase):
     def test_create_time_empty(self):
         actual = utils.create_time("")
         self.assertEqual(actual, time.min)
+
+@patch("logging.StreamHandler")
+@patch("gd.utils.RotatingFileHandler")
+class Test_enable_logging(unittest.TestCase):
+    """Test gd.utils.enable_logging"""
+
+    @patch("os.getenv")
+    def test_debug(self, mock_getenv, mock_RFH, mock_SH):
+        mock_getenv.return_value = "DEBUG"
+        logger = utils.enable_logging()
+        self.assertEqual(logger.level, logging.DEBUG)
+
+    @patch("os.getenv")
+    def test_regular(self, mock_getenv, mock_RFH, mock_SH):
+        mock_getenv.return_value = False
+        logger = utils.enable_logging()
+        self.assertEqual(logger.level, logging.INFO)
