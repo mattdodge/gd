@@ -30,7 +30,9 @@ def upload(urls):
             continue
 
         if container is None:
-            container = storage.get_container(driver, parts.netloc)
+            container = storage.get_container(driver,
+                                              "%s://%s" % (parts.scheme,
+                                                           parts.netloc))
 
         object_name = parts.path
 
