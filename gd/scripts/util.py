@@ -4,8 +4,6 @@ from xml.etree import ElementTree
 import argparse
 import os
 
-import requests
-
 from gd import database
 from gd import parser
 from gd import scrape
@@ -14,22 +12,6 @@ from gd.models import (Action, AtBat, Game, Player, Pitch, Stadium,
                        Team, Umpire)
 
 logger = utils.enable_logging()
-
-
-def _get_file_list(session, begin, end):
-    all_years = scrape.get_years(session=session)
-    inc_years = utils.get_inclusive_urls(all_years, begin, end)
-
-    all_months = scrape.get_months(inc_years, session=session)
-    inc_months = utils.get_inclusive_urls(all_months, begin, end)
-
-    all_days = scrape.get_days(inc_months, session=session)
-    inc_days = utils.get_inclusive_urls(all_days, begin, end)
-
-    games = scrape.get_games(inc_days, session=session)
-    files = scrape.get_files(games, session=session)
-
-    return files
 
 
 def do_scrape(args):
@@ -49,10 +31,8 @@ def do_scrape(args):
     begin = utils.get_boundary(args.begin)
     end = utils.get_boundary(args.end)
 
-    session = requests.Session()
-
     start, stop = utils.get_request_range(begin, end)
-    files = _get_file_list(session, start, stop)
+    files = scrape.get_files_in_range(start, stop)
 
     action(files)
     end_scrape = datetime.now()

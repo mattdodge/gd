@@ -137,3 +137,20 @@ def get_files(games, source=web_scraper, session=None):
         yield from source([game], "game.xml", session)
         yield from source([urljoin(game, "inning/")],
                           "inning_all.xml", session)
+
+
+def get_files_in_range(begin, end):
+    session = requests.Session()
+
+    all_years = get_years(session=session)
+    inc_years = utils.get_inclusive_urls(all_years, begin, end)
+
+    all_months = get_months(inc_years, session=session)
+    inc_months = utils.get_inclusive_urls(all_months, begin, end)
+
+    all_days = get_days(inc_months, session=session)
+    inc_days = utils.get_inclusive_urls(all_days, begin, end)
+
+    games = get_games(inc_days, session=session)
+
+    yield from get_files(games, session=session)
