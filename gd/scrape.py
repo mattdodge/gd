@@ -9,7 +9,6 @@ from gd import utils
 
 logger = utils.get_logger(__name__)
 
-WEB_ROOT = "http://gd2.mlb.com/components/game/mlb/"
 
 # ElementTree chokes on the doctype in these files so just skip over it.
 # We're using an XML parser to parse HTML. Whatever, the rest of it works.
@@ -111,7 +110,7 @@ def filesystem_scraper(roots, match=None, **kwargs):
                 yield os.path.join(root, name)
 
 
-def get_years(root=WEB_ROOT, source=web_scraper, session=None):
+def get_years(root=utils.WEB_ROOT, source=web_scraper, session=None):
     """From the root URL, yield URLs to the available years."""
     yield from source([root], "year", session)
 

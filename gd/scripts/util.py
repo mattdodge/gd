@@ -1,6 +1,5 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from os.path import join
-from urllib.parse import urljoin
 from xml.etree import ElementTree
 import argparse
 import os
@@ -15,25 +14,6 @@ from gd.models import (Action, AtBat, Game, Player, Pitch, Stadium,
                        Team, Umpire)
 
 logger = utils.enable_logging()
-
-ROOT = "gd2.mlb.com/components/game/mlb/year_2014/"
-
-
-def _get_request_range(begin, end):
-    if begin.date is None:
-        start = scrape.WEB_ROOT
-    else:
-        start = urljoin(scrape.WEB_ROOT,
-                        utils.datetime_to_url(begin.date, begin.num_parts))
-
-    if end.date is None:
-        stop = urljoin(scrape.WEB_ROOT, utils.datetime_to_url(
-                       datetime.today() - timedelta(days=1)))
-    else:
-        stop = urljoin(scrape.WEB_ROOT,
-                       utils.datetime_to_url(end.date, end.num_parts))
-
-    return start, stop
 
 
 def _get_file_list(session, begin, end):
@@ -71,7 +51,7 @@ def do_scrape(args):
 
     session = requests.Session()
 
-    start, stop = _get_request_range(begin, end)
+    start, stop = utils.get_request_range(begin, end)
     files = _get_file_list(session, start, stop)
 
     action(files)

@@ -1,15 +1,17 @@
 from collections import namedtuple
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 from logging.handlers import RotatingFileHandler
+from urllib.parse import urljoin
 import logging
 import os
-
 
 Boundary = namedtuple("Boundary", "date num_parts")
 
 MONTHS = {"January": 1, "February": 2, "March": 3, "April": 4,
           "May": 5, "June": 6, "July": 7, "August": 8, "September": 9,
           "October": 10, "November": 11, "December": 12}
+
+WEB_ROOT = "http://gd2.mlb.com/components/game/mlb/"
 
 
 def get_boundary(date):
@@ -27,6 +29,24 @@ def get_boundary(date):
             continue
     else:
         return Boundary(None, 0)
+
+
+def get_request_range(begin, end):
+    if begin.date is None:
+        start = WEB_ROOT
+    else:
+        start = urljoin(WEB_ROOT,
+                        datetime_to_url(begin.date, begin.num_parts))
+
+    if end.date is None:
+        print(datetime_to_url)
+        stop = urljoin(WEB_ROOT, datetime_to_url(
+                       datetime.today() - timedelta(days=1)))
+    else:
+        stop = urljoin(WEB_ROOT,
+                       datetime_to_url(end.date, end.num_parts))
+
+    return start, stop
 
 
 def get_inclusive_urls(urls, start, stop):
