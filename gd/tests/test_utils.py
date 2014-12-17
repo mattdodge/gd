@@ -1,5 +1,6 @@
 from datetime import datetime, date, time
 from unittest.mock import patch
+from urllib.parse import urljoin
 import logging
 import unittest
 
@@ -53,6 +54,31 @@ class Test_get_boundary(unittest.TestCase):
         actual_dt, actual_parts = utils.get_boundary(year)
         self.assertEqual(actual_dt, expected_dt)
         self.assertEqual(actual_parts, expected_parts)
+
+
+class Test_get_request_range(unittest.TestCase):
+
+    @patch("gd.utils.datetime_to_url")
+    def test_empty(self, mock_dtu):
+        value = "empty"
+        mock_dtu.return_value = value
+        empty = utils.Boundary(None, None)
+
+        actual = utils.get_request_range(empty, empty)
+
+        self.assertEqual(actual[0], utils.WEB_ROOT)
+        self.assertEqual(actual[1], urljoin(utils.WEB_ROOT, value))
+
+    @patch("gd.utils.datetime_to_url")
+    def test_with_dates(self, mock_dtu):
+        value = utils.Boundary("date", "num_parts")
+        mock_dtu.return_value = value.date
+
+        expected = urljoin(utils.WEB_ROOT, value.date)
+        actual = utils.get_request_range(value, value)
+
+        self.assertEqual(actual[0], expected)
+        self.assertEqual(actual[1], expected)
 
 
 class Test_get_inclusive_urls(unittest.TestCase):
