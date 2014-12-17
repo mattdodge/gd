@@ -39,7 +39,6 @@ def get_request_range(begin, end):
                         datetime_to_url(begin.date, begin.num_parts))
 
     if end.date is None:
-        print(datetime_to_url)
         stop = urljoin(WEB_ROOT, datetime_to_url(
                        datetime.today() - timedelta(days=1)))
     else:
